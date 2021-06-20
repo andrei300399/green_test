@@ -13,11 +13,30 @@
     <tbody>
     {% for group in groups %}
     <tr>
-                  <td>{{ group.group_id }}</td>
-                  <td>{{ group.group_name }}</td>
-
-               </tr>
-     {% endfor %}
+        <td>{{ group.group_id }}</td>
+        <td>{{ group.group_name }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+<table>
+    <tbody>
+    {% for user in users %}
+    <tr>
+        <td>{{ user.group_id }}</td>
+        <td>{{ user.user_id }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+<table>
+    <tbody>
+    {% for duty in duty_dates %}
+    <tr>
+        <td>{{ duty.day }}</td>
+        <td>{{ duty.user_name }}</td>
+    </tr>
+    {% endfor %}
     </tbody>
 </table>
 

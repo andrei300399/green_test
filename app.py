@@ -3,11 +3,11 @@ import os
 from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 import json
+
 basedir = os.path.abspath(os.path.dirname(__file__))
 
-
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATA_BASE_URI'] ='sqlite:////' + os.path.join(basedir, 'data.sqlite')
+app.config['SQLALCHEMY_DATA_BASE_URI'] = 'sqlite:////' + os.path.join(basedir, 'data.sqlite')
 db = SQLAlchemy(app)
 
 duty_dates = db.Table('duty_dates',
@@ -58,41 +58,48 @@ class DutyDate(db.Model):
 def index():
     with open('duty.json', encoding='utf-8') as json_file:
         data = json.load(json_file)
+
+    for day in data[0]["usersDutyList"][0]["dutyDays"]:
+        duty_date_db = DutyDate(day=day["day"], day_of_week=day["dayOfWeek"])
+        db.session.add(duty_date_db)
+    db.session.commit()
     for group in data:
         group_db = Group(group_id=group["groupId"], group_name=group["groupName"],
                          month_number=group["monthNumber"], year=group["year"],
                          month_name=group["monthName"])
-        db.session.add(group_db)
-        db.session.commit()
-        # db.create_all()
-        # for user in group["usersDutyList"]:
-        #     if not user["isOnDutyThisMonth"]:
-        #         continue
-        #     else:
-        #         user_db = User(user_id=user["userId"], user_name=user["userName"],
-        #                        user_full_name=user["userFullname"], user_email=user["userEmail"],
-        #                        is_on_duty_this_month=user["isOnDutyThisMonth"], user_phone=user["userPhone"],
-        #                        user_ext=user["userExt"], is_owner=user["isOwner"], group=group_db)
-        #         for day in user["dutyDays"]:
-        #             if day["isDuty"]:
-        #                 duty_date_db = DutyDate(day=day["day"], day_of_week=day["dayOfWeek"])
-        #                 user_db.duty_dates.append(duty_date_db)
-        #         db.session.add(user_db)
-        #         db.session.commit()
-        #         db.create_all()
-    # Group.query.all()
 
+        for user in group["usersDutyList"]:
+            if user["isOnDutyThisMonth"] == 'false':
+                continue
+            else:
+                user_db = User(user_id=user["userId"], user_name=user["userName"],
+                               user_full_name=user["userFullname"], user_email=user["userEmail"],
+                               is_on_duty_this_month=user["isOnDutyThisMonth"], user_phone=user["userPhone"],
+                               user_ext=user["userExt"], is_owner=user["isOwner"], group=group_db)
+                db.session.add(user_db)
+                db.session.commit()
+                print(user_db.user_id, user_db.group_id)
+                for day in user["dutyDays"]:
+                    print(day)
 
-    return render_template("index.html", groups = Group.query.all())
+                    if day["isDuty"] == 'true':
+                        print("2", day)
+                        user_db.duty_dates.append(DutyDate.query.filter_by(day=day["day"]).first())
+                db.session.commit()
 
-
+    query_user_role = User.query.join(duty_dates)
+    # print(User.query.filter_by(user_id=29).first().duty_dates[7])
+    return render_template("index.html",
+                           groups=Group.query.all(),
+                           users=User.query.all(),
+                           duty_dates=query_user_role)
+                                      #User.query.join(duty_dates).join(DutyDate).filter((duty_dates.c.user_id == User.user_id) & (duty_dates.c.duty_date_day == DutyDate.day)).all())
 @app.route("/drop")
 def drop():
-    db.drop_all()
-    return "droped"
+        db.drop_all()
+        return "droped"
 
 
 if __name__ == "__main__":
     db.create_all()
     app.run(debug=True)
-
