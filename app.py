@@ -1,9 +1,13 @@
+import os
+
 from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 import json
+basedir = os.path.abspath(os.path.dirname(__file__))
+
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////test.db'
+app.config['SQLALCHEMY_DATA_BASE_URI'] ='sqlite:////' + os.path.join(basedir, 'data.sqlite')
 db = SQLAlchemy(app)
 
 duty_dates = db.Table('duty_dates',
@@ -59,17 +63,36 @@ def index():
                          month_number=group["monthNumber"], year=group["year"],
                          month_name=group["monthName"])
         db.session.add(group_db)
-        for user in group["usersDutyList"]:
-            if not user["isOnDutyThisMonth"]:
-                continue
-            else:
-                user_db = User(user_id=user["userId"], user_name=user["userName"],
-                               user_full_name=user["userFullname"], user_email=user["userEmail"],
-                               is_on_duty_this_month=user["userId"], user_phone=user["userId"],
-                               user_ext=user["userId"], is_owner=user["userId"])
+        db.session.commit()
+        # db.create_all()
+        # for user in group["usersDutyList"]:
+        #     if not user["isOnDutyThisMonth"]:
+        #         continue
+        #     else:
+        #         user_db = User(user_id=user["userId"], user_name=user["userName"],
+        #                        user_full_name=user["userFullname"], user_email=user["userEmail"],
+        #                        is_on_duty_this_month=user["isOnDutyThisMonth"], user_phone=user["userPhone"],
+        #                        user_ext=user["userExt"], is_owner=user["isOwner"], group=group_db)
+        #         for day in user["dutyDays"]:
+        #             if day["isDuty"]:
+        #                 duty_date_db = DutyDate(day=day["day"], day_of_week=day["dayOfWeek"])
+        #                 user_db.duty_dates.append(duty_date_db)
+        #         db.session.add(user_db)
+        #         db.session.commit()
+        #         db.create_all()
+    # Group.query.all()
 
-    return render_template("index.html")
+
+    return render_template("index.html", groups = Group.query.all())
+
+
+@app.route("/drop")
+def drop():
+    db.drop_all()
+    return "droped"
 
 
 if __name__ == "__main__":
+    db.create_all()
     app.run(debug=True)
+
