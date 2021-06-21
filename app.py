@@ -78,26 +78,22 @@ def index():
                                user_ext=user["userExt"], is_owner=user["isOwner"], group=group_db)
                 db.session.add(user_db)
                 db.session.commit()
-                print(user_db.user_id, user_db.group_id)
                 for day in user["dutyDays"]:
-                    print(day)
 
                     if day["isDuty"] == 'true':
-                        print("2", day)
                         user_db.duty_dates.append(DutyDate.query.filter_by(day=day["day"]).first())
                 db.session.commit()
 
-    query_user_role = User.query.join(duty_dates)
-    # print(User.query.filter_by(user_id=29).first().duty_dates[7])
+
     return render_template("index.html",
                            groups=Group.query.all(),
                            users=User.query.all(),
-                           duty_dates=query_user_role)
-                                      #User.query.join(duty_dates).join(DutyDate).filter((duty_dates.c.user_id == User.user_id) & (duty_dates.c.duty_date_day == DutyDate.day)).all())
-@app.route("/drop")
-def drop():
-        db.drop_all()
-        return "droped"
+                           )
+
+# @app.route("/drop")
+# def drop():
+#         db.drop_all()
+#         return "droped"
 
 
 if __name__ == "__main__":
