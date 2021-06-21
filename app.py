@@ -69,7 +69,7 @@ def index():
                          month_name=group["monthName"])
 
         for user in group["usersDutyList"]:
-            if user["isOnDutyThisMonth"] == 'false':
+            if not user["isOnDutyThisMonth"]:
                 continue
             else:
                 user_db = User(user_id=user["userId"], user_name=user["userName"],
@@ -79,7 +79,6 @@ def index():
                 db.session.add(user_db)
                 db.session.commit()
                 for day in user["dutyDays"]:
-
                     if day["isDuty"] == 'true':
                         user_db.duty_dates.append(DutyDate.query.filter_by(day=day["day"]).first())
                 db.session.commit()

@@ -12,7 +12,10 @@
     <tr>
         <td>{{ user.group_id }}</td>
         <td>{{ user.user_id }}</td>
-        <td>{{ user.duty_dates }}</td>
+        <td>{{ user.user_full_name }}</td>
+        {% for duty in user.duty_dates %}
+            <td>{{ duty.day }}</td>
+        {% endfor %}
     </tr>
     {% endfor %}
     </tbody>
