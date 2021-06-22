@@ -83,16 +83,22 @@ def index():
                         user_db.duty_dates.append(DutyDate.query.filter_by(day=day["day"]).first())
                 db.session.commit()
 
-
     return render_template("index.html",
                            groups=Group.query.all(),
                            users=User.query.all(),
                            )
 
-# @app.route("/drop")
-# def drop():
-#         db.drop_all()
-#         return "droped"
+
+@app.route("/<int:group>/<string:day>")
+def show_duty(group, day):
+    duty_day = DutyDate.query.filter_by(day=day).first()
+    users = User.query.filter_by(group_id=group).all()
+    for user in users:
+        if duty_day in user.duty_dates:
+            found_user = user
+            break
+    return f"Current duty user {found_user.user_id} {found_user.user_name} {found_user.user_phone} {found_user.user_email}"
+
 
 
 if __name__ == "__main__":
