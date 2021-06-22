@@ -5,9 +5,27 @@
     <title>All duty</title>
 </head>
 <body>
-<h1>All duty in current day</h1>
+<h1>Выбрать дежурного в определенной групее в определенный день</h1>
+<select class="date">
+    {% for date in dates %}
+    <option value="{{date.day}}">{{date.day}}</option>
+    {% endfor %}
+
+</select>
+<select class="group">
+    {% for group in groups %}
+    <option value="{{group.group_id}}">{{group.group_id}}</option>
+    {% endfor %}
+
+</select>
+<button><a href="#">Выбрать день</a></button>
+<a href="/">Главная</a>
 <table>
     <tbody>
+      {% if user==False %}
+      <p>Никто не дежурит в этот день в этой группе!</p>
+
+      {% else %}
     <tr>
         <td>{{ user.group_id }}</td>
         <td>{{ user.user_id }}</td>
@@ -16,7 +34,32 @@
         <td>{{ user.user_phone }}</td>
         <td>{{ user.user_email }}</td>
     </tr>
+    {% endif %}
     </tbody>
 </table>
+<script>
+    let selectDate = document.querySelector(".date");
+    let selectGroup = document.querySelector(".group");
+    let btn = document.querySelector("button");
+     let a = document.querySelector("a");
+       let selectedValueGroup = selectGroup.options[selectGroup.selectedIndex].text;
+     let selectedValueDate = selectDate.options[selectDate.selectedIndex].text;
+    selectDate.addEventListener("click", function(){
+
+    selectedValueDate = selectDate.options[selectDate.selectedIndex].text;
+
+     a.href = "/current_duty/" + selectedValueGroup +"/" + selectedValueDate;
+     return false;
+    });
+    selectGroup.addEventListener("click", function(){
+
+    selectedValueGroup = selectGroup.options[selectGroup.selectedIndex].text;
+
+     a.href = "/current_duty/" + selectedValueGroup +"/" + selectedValueDate;
+     return false;
+    });
+
+
+</script>
 </body>
 </html>

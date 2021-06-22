@@ -108,11 +108,12 @@ def show_duty(group, day):
 
     duty_day = DutyDate.query.filter_by(day=day).first()
     users = User.query.filter_by(group_id=group).all()
+    found_user = False
     for user in users:
         if duty_day in user.duty_dates:
             found_user = user
             break
-    return render_template("current_duty.html", user=found_user)
+    return render_template("current_duty.html", user=found_user, dates=DutyDate.query.all(), groups=Group.query.all())
 
 
 @app.route("/all_duty/<string:day>")
