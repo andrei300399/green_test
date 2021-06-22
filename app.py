@@ -100,6 +100,16 @@ def show_duty(group, day):
     return f"Current duty user {found_user.user_id} {found_user.user_name} {found_user.user_phone} {found_user.user_email}"
 
 
+@app.route("/<string:day>")
+def show_all_duty(day):
+    duty_day = DutyDate.query.filter_by(day=day).first()
+    users = User.query.all()
+    found_users = []
+    for user in users:
+        if duty_day in user.duty_dates:
+            found_users.append(user)
+    return render_template("all_duty.html", users=found_users)
+
 
 if __name__ == "__main__":
     db.create_all()
