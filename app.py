@@ -88,6 +88,7 @@ def index():
     return render_template("index.html",
                            groups=Group.query.all(),
                            users=User.query.all(),
+                           dates=DutyDate.query.all()
                            )
 
 
