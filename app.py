@@ -97,7 +97,7 @@ def show_duty(group, day):
         if duty_day in user.duty_dates:
             found_user = user
             break
-    return f"Current duty user {found_user.user_id} {found_user.user_name} {found_user.user_phone} {found_user.user_email}"
+    return render_template("current_duty.html", user=found_user)
 
 
 @app.route("/<string:day>")
