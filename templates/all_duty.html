@@ -6,7 +6,15 @@
 </head>
 <body>
 <h1>All duty in current day</h1>
-<input type="text"><a href="/all_duty/{{ }}"></a>
+
+   <select name="hero[]">
+        {% for date in dates %}
+        <option value="{{date.day}}">{{date.day}}</option>
+        {% endfor %}
+
+   </select>
+   <button><a href="#">Выбрать день</a></button>
+
 <table>
     <tbody>
     {% for user in users %}
@@ -21,5 +29,19 @@
     {% endfor %}
     </tbody>
 </table>
+<script>
+    let select = document.querySelector("select");
+    let btn = document.querySelector("button");
+     let a = document.querySelector("a");
+    select.addEventListener("click", function(){
+
+    let selectedValue = select.options[select.selectedIndex].text;
+
+     a.href = "/all_duty/" + selectedValue;
+     return false;
+    });
+
+
+</script>
 </body>
 </html>

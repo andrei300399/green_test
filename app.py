@@ -123,7 +123,7 @@ def show_all_duty(day):
     for user in users:
         if duty_day in user.duty_dates:
             found_users.append(user)
-    return render_template("all_duty.html", users=found_users)
+    return render_template("all_duty.html", users=found_users, dates=DutyDate.query.all())
 
 
 if __name__ == "__main__":
