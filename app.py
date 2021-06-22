@@ -57,6 +57,17 @@ class DutyDate(db.Model):
 
 @app.route("/")
 def index():
+
+
+    return render_template("index.html",
+                           groups=Group.query.all(),
+                           users=User.query.all(),
+                           dates=DutyDate.query.all()
+                           )
+
+
+@app.route("/calendar")
+def calendar():
     if not os.path.exists('data.db'):
         with open('duty.json', encoding='utf-8') as json_file:
             data = json.load(json_file)
@@ -85,14 +96,14 @@ def index():
                             user_db.duty_dates.append(DutyDate.query.filter_by(day=day["day"]).first())
                     db.session.commit()
 
-    return render_template("index.html",
+    return render_template("calendar.html",
                            groups=Group.query.all(),
                            users=User.query.all(),
                            dates=DutyDate.query.all()
                            )
 
 
-@app.route("/<int:group>/<string:day>")
+@app.route("/current_duty/<int:group>/<string:day>")
 def show_duty(group, day):
 
     duty_day = DutyDate.query.filter_by(day=day).first()
@@ -104,7 +115,7 @@ def show_duty(group, day):
     return render_template("current_duty.html", user=found_user)
 
 
-@app.route("/<string:day>")
+@app.route("/all_duty/<string:day>")
 def show_all_duty(day):
     duty_day = DutyDate.query.filter_by(day=day).first()
     users = User.query.all()

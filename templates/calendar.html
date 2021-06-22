@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="{{ url_for('static',filename='styles/style.css') }}">
+
+</head>
+<body>
+<h1>Duty Calendar</h1>
+<table>
+    <thead>
+    <tr>
+        <th>GroupID</th>
+        <th>UserID</th>
+        <th>UserFullName</th>
+        {% for day in dates %}
+        <th>{{ day.day }} ({{day.day_of_week}})</th>
+        {% endfor %}
+    </tr>
+    </thead>
+    <tbody>
+
+    {% for user in users %}
+    <tr>
+        <td>{{ user.group_id }}</td>
+        <td>{{ user.user_id }}</td>
+        <td>{{ user.user_name }}</td>
+        {% for i in dates %}
+        {% if i in user.duty_dates %}
+        <td class="green">Yes</td>
+        {% else %}
+        <td class="red">No</td>
+        {% endif %}
+        {% endfor %}
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+</body>
+</html>

@@ -2,40 +2,16 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Home Page</title>
     <link rel="stylesheet" href="{{ url_for('static',filename='styles/style.css') }}">
 
 </head>
 <body>
-<h1>Duty Calendar</h1>
-<table>
-    <thead>
-    <tr>
-        <th>GroupID</th>
-        <th>UserID</th>
-        <th>UserFullName</th>
-        {% for i in range(30) %}
-        <th>{{ i + 1 }}</th>
-        {% endfor %}
-    </tr>
-    </thead>
-    <tbody>
-
-    {% for user in users %}
-    <tr>
-        <td>{{ user.group_id }}</td>
-        <td>{{ user.user_id }}</td>
-        <td>{{ user.user_full_name }}</td>
-        {% for i in dates %}
-        {% if i in user.duty_dates %}
-        <td>Yes</td>
-        {% else %}
-        <td>No</td>
-        {% endif %}
-        {% endfor %}
-    </tr>
-    {% endfor %}
-    </tbody>
-</table>
+<h1>Weclome!</h1>
+<ul>
+    <li><a href="/current_duty">Посмотреть текущего дежурного в выбранной группе в выбранный день</a></li>
+    <li><a href="/all_duty/0/0">Посмотреть всех дежурных за выбранный день</a></li>
+    <li><a href="/calendar">Таблица-календарь</a></li>
+</ul>
 </body>
 </html>
