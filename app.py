@@ -59,45 +59,15 @@ class DutyDate(db.Model):
 def index():
 
 
-    return render_template("index.html",
-                           groups=Group.query.all(),
-                           users=User.query.all(),
-                           dates=DutyDate.query.all()
+    return render_template("index.html"
                            )
 
 
 @app.route("/calendar")
 def calendar():
-    if not os.path.exists('data.db'):
-        with open('duty.json', encoding='utf-8') as json_file:
-            data = json.load(json_file)
 
-        for day in data[0]["usersDutyList"][0]["dutyDays"]:
-            duty_date_db = DutyDate(day=day["day"], day_of_week=day["dayOfWeek"])
-            db.session.add(duty_date_db)
-        db.session.commit()
-        for group in data:
-            group_db = Group(group_id=group["groupId"], group_name=group["groupName"],
-                         month_number=group["monthNumber"], year=group["year"],
-                         month_name=group["monthName"])
-
-            for user in group["usersDutyList"]:
-                if not user["isOnDutyThisMonth"]:
-                    continue
-                else:
-                    user_db = User(user_id=user["userId"], user_name=user["userName"],
-                               user_full_name=user["userFullname"], user_email=user["userEmail"],
-                               is_on_duty_this_month=user["isOnDutyThisMonth"], user_phone=user["userPhone"],
-                               user_ext=user["userExt"], is_owner=user["isOwner"], group=group_db)
-                    db.session.add(user_db)
-                    db.session.commit()
-                    for day in user["dutyDays"]:
-                        if day["isDuty"] == 'true':
-                            user_db.duty_dates.append(DutyDate.query.filter_by(day=day["day"]).first())
-                    db.session.commit()
 
     return render_template("calendar.html",
-                           groups=Group.query.all(),
                            users=User.query.all(),
                            dates=DutyDate.query.all()
                            )
@@ -129,4 +99,31 @@ def show_all_duty(day):
 
 if __name__ == "__main__":
     db.create_all()
+    if len(User.query.all()) < 1:
+        with open('duty.json', encoding='utf-8') as json_file:
+            data = json.load(json_file)
+
+        for day in data[0]["usersDutyList"][0]["dutyDays"]:
+            duty_date_db = DutyDate(day=day["day"], day_of_week=day["dayOfWeek"])
+            db.session.add(duty_date_db)
+        db.session.commit()
+        for group in data:
+            group_db = Group(group_id=group["groupId"], group_name=group["groupName"],
+                         month_number=group["monthNumber"], year=group["year"],
+                         month_name=group["monthName"])
+
+            for user in group["usersDutyList"]:
+                if not user["isOnDutyThisMonth"]:
+                    continue
+                else:
+                    user_db = User(user_id=user["userId"], user_name=user["userName"],
+                               user_full_name=user["userFullname"], user_email=user["userEmail"],
+                               is_on_duty_this_month=user["isOnDutyThisMonth"], user_phone=user["userPhone"],
+                               user_ext=user["userExt"], is_owner=user["isOwner"], group=group_db)
+                    db.session.add(user_db)
+                    db.session.commit()
+                    for day in user["dutyDays"]:
+                        if day["isDuty"] == 'true':
+                            user_db.duty_dates.append(DutyDate.query.filter_by(day=day["day"]).first())
+                    db.session.commit()
     app.run(debug=True)
